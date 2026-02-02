@@ -1,8 +1,8 @@
-<img align="left" style="width:300px" src="https://github.com/user-attachments/assets/2a9138b7-c521-4a32-b0c5-e5715627e88f" alt="ajax_logo" width="300"/> 
+<img align="left" style="width:300px" src="https://github.com/user-attachments/assets/7ef7560e-3363-412e-bd38-d77d7fa921b1" alt="ajax_logo" width="300"/> 
 
 <div align="left">
 
-### *ajax*  <img src="https://img.shields.io/badge/version-indev-green">
+### **ajax**
 
 ### zero-overhead (and common sense) C++ data-parallel types library
 ajax is a C++23 header-only SIMD abstraction library that provides thin, zero-overhead wrappers around x86 SIMD intrinsics; allowing developers to write expressive, type-safe, and performance-critical data-parallel code while retaining direct access to native CPU instructions.
