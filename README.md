@@ -5,10 +5,11 @@
 ### **ajax**
 
 ### zero-overhead (and common sense) C++ data-parallel types library
-ajax is a C++23 header-only SIMD abstraction library that provides thin, zero-overhead wrappers around x86 SIMD intrinsics; allowing developers to write expressive, type-safe, and performance-critical data-parallel code while retaining direct access to native CPU instructions.
+ajax is a C++23 header-only SIMD abstraction library that provides thin, zero-overhead wrappers around x86 SIMD intrinsics; allowing developers to write expressive, type-safe, and performance-critical data-parallel code.
 
 </div>
-
+[![License](https://img.shields.io/badge/License-Boost_1.0-lightblue.svg)](https://www.boost.org/LICENSE_1_0.txt)
+[![C++23](https://img.shields.io/badge/C++-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 
 
 ------
@@ -88,8 +89,6 @@ Motivation
 *ajax* was developed to provide a minimal, no-nonsense SIMD layer that preserves the full power of native intrinsics while improving readability, correctness, and composability. The lack of common-sense, easily usable SIMD libraries that strike a practical balance between abstraction and control was glaring; existing solutions either expose raw intrinsics with little structure or introduce layers of indirection that impact performance while offering little value in terms of development speed.
 
 In particular, the introduction of *std::simd* to experimental C++ was found to be overly cumbersome and, in many cases, illogical. Its design diverges significantly from natural container-like semantics, introducing complexity that makes low-level data-parallel programming harder rather than simpler. Instead of feeling like a straightforward extension of fundamental types, it often requires adapting algorithms to fit the abstraction.
-
-As a result, ajax was created to meet a clear set of goals: provide thin, predictable, and strongly typed SIMD containres; map cleanly to native instructions; avoid hidden costs; and remain intuitive to use for developers already familiar with standard C++ data structures. 
 
 <p align="justify"> 
 

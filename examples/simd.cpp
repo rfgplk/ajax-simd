@@ -19,8 +19,8 @@ main()
   // compat.
   //  std::cout << n << std::endl;
   std::cout << "Values of set (v): ";
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -29,8 +29,8 @@ main()
   // set elements
   std::cout << "Setting elements: " << std::endl;
   v = { 8, 12, 24, 45 };
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -38,8 +38,8 @@ main()
   std::cout << std::endl;
   v.to_zero();     // zero out entire array
   std::cout << "Zeroing out: " << std::endl;
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -47,8 +47,8 @@ main()
   std::cout << std::endl;
   std::cout << "Is all zeroes: " << v.all_zeroes() << std::endl;
   v.to_ones();     // set all bits to one
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -59,8 +59,8 @@ main()
   std::cout << "Resetting set to { 5, 10, 25, 50 } and adding 10 to each value: " << std::endl;
   v = { 5, 10, 25, 50 };
   v += 10;     // arithmetic, add 10 to each elements
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -69,8 +69,8 @@ main()
 
   std::cout << "Subtracting 1 from each value:" << std::endl;
   v -= 1;
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -78,8 +78,8 @@ main()
   std::cout << std::endl;
   v -= { 5, 10, 15, 20 };     // subtract another set
   std::cout << "Subtracting another set of { 5, 10, 15, 20 }: " << std::endl;
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -87,8 +87,8 @@ main()
   std::cout << std::endl;
   v *= 3;
   std::cout << "After multiplication: " << std::endl;
-  for ( int i = 0; i < v.size(); i++ ) {
-    if ( i + 1 != v.size() )
+  for ( size_t i = 0; i < v.size(); i++ ) {
+    if ( static_cast<size_t>(i + 1) != v.size() )
       std::cout << v[i] << ", ";
     else
       std::cout << v[i];
@@ -97,12 +97,12 @@ main()
 
   // shorthand
   ajax::w32 arr32 = {};
-  for ( int i = 0; i < 30; ++i )
+  for ( size_t i = 0; i < 30; ++i )
     arr32 += (3 * i);
   i32 arr[8] = {};
   arr32.get(arr);     // load to primitive type
   std::cout << "C++ POD array is: " << std::endl;
-  for ( int i = 0; i < 8; i++ )
+  for ( size_t i = 0; i < 8; i++ )
     std::cout << arr32[i] << ", ";
   std::cout << std::endl;
   return 0;

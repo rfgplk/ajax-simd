@@ -394,29 +394,44 @@ public:
     } else if constexpr ( stdlib::is_same_v<T, d256> ) {
       return 4;
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         return 4;
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         return 8;
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         return 16;
       }
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         return 32;
       }
     }
   }
 
   template <typename R>
-  requires (stdlib::is_integral_v<R>)
+    requires(stdlib::is_integral_v<R>)
   constexpr auto
   operator[](const R a)
   {
     // guess the formatter doesn't like this :(
     if constexpr ( stdlib::is_same_v<T, f256> ) {
-      float _f = _mm256_cvtss_f32(_mm256_permute_ps(value, _MM_SHUFFLE(a, a, a, a)));
+      float _f = 0.0f;
+      // thanks docs ;c
+      switch ( a ) {
+      case 0:
+        _f = _mm256_cvtss_f32(_mm256_permute_ps(value, _MM_SHUFFLE(0, 0, 0, 0)));
+        break;
+      case 1:
+        _f = _mm256_cvtss_f32(_mm256_permute_ps(value, _MM_SHUFFLE(1, 1, 1, 1)));
+        break;
+      case 2:
+        _f = _mm256_cvtss_f32(_mm256_permute_ps(value, _MM_SHUFFLE(2, 2, 2, 2)));
+        break;
+      case 3:
+        _f = _mm256_cvtss_f32(_mm256_permute_ps(value, _MM_SHUFFLE(3, 3, 3, 3)));
+        break;
+      }
       return _f;
     } else if constexpr ( stdlib::is_same_v<T, d256> ) {
       double _d;
@@ -436,7 +451,7 @@ public:
       }
       return _d;
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         i64 _d = 0;
         switch ( a ) {
         case 0:
@@ -454,7 +469,7 @@ public:
         }
         return _d;
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         i32 _d = 0;
         switch ( a ) {
         case 0:
@@ -484,7 +499,7 @@ public:
         }
         return _d;
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         i16 _d = 0;
         switch ( a ) {
         case 0:
@@ -538,7 +553,7 @@ public:
         }
         return _d;
       }
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         i8 _d = 0;
         switch ( a ) {
         case 0:
@@ -654,16 +669,16 @@ public:
         return _mm256_movemask_pd(_r);
       } else if constexpr ( stdlib::is_same_v<T, i256> ) {
         T _r;
-        if constexpr ( stdlib::is_same_v<F, __v8> ) {
+        if constexpr ( __is_8_wide<F>() ) {
           _r = _mm256_cmpeq_epi8(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v16> ) {
+        if constexpr ( __is_16_wide<F>() ) {
           _r = _mm256_cmpeq_epi16(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v32> ) {
+        if constexpr ( __is_32_wide<F>() ) {
           _r = _mm256_cmpeq_epi32(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v64> ) {
+        if constexpr ( __is_64_wide<F>() ) {
           _r = _mm256_cmpeq_epi64(value, o.value);
         }
         return _mm256_movemask_ps(_mm256_castsi256_ps(_r));
@@ -683,16 +698,16 @@ public:
         return _mm256_movemask_pd(_r);
       } else if constexpr ( stdlib::is_same_v<T, i256> ) {
         T _r;
-        if constexpr ( stdlib::is_same_v<F, __v8> ) {
+        if constexpr ( __is_8_wide<F>() ) {
           _r = _mm256_cmpge_epi8(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v16> ) {
+        if constexpr ( __is_16_wide<F>() ) {
           _r = _mm256_cmpge_epi16(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v32> ) {
+        if constexpr ( __is_32_wide<F>() ) {
           _r = _mm256_cmpge_epi32(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v64> ) {
+        if constexpr ( __is_64_wide<F>() ) {
           _r = _mm256_cmpge_epi64(value, o.value);
         }
         return _mm256_movemask_ps(_mm256_castsi256_ps(_r));
@@ -713,16 +728,16 @@ public:
         return _mm256_movemask_pd(_r);
       } else if constexpr ( stdlib::is_same_v<T, i256> ) {
         T _r;
-        if constexpr ( stdlib::is_same_v<F, __v8> ) {
+        if constexpr ( __is_8_wide<F>() ) {
           _r = _mm256_cmpgt_epi8(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v16> ) {
+        if constexpr ( __is_16_wide<F>() ) {
           _r = _mm256_cmpgt_epi16(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v32> ) {
+        if constexpr ( __is_32_wide<F>() ) {
           _r = _mm256_cmpgt_epi32(value, o.value);
         }
-        if constexpr ( stdlib::is_same_v<F, __v64> ) {
+        if constexpr ( __is_64_wide<F>() ) {
           _r = _mm256_cmpgt_epi64(value, o.value);
         }
         return _mm256_movemask_ps(_mm256_castsi256_ps(_r));
@@ -741,16 +756,16 @@ public:
       return _mm256_movemask_pd(_r);
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
       T _r;
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         _r = _mm256_cmplt_epi8(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         _r = _mm256_cmplt_epi16(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         _r = _mm256_cmplt_epi32(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         _r = _mm256_cmplt_epi64(value, o.value);
       }
       return _mm256_movemask_ps(_mm256_castsi256_ps(_r));
@@ -768,16 +783,16 @@ public:
       return _mm256_movemask_pd(_r);
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
       T _r;
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         _r = _mm256_cmple_epi8(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         _r = _mm256_cmple_epi16(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         _r = _mm256_cmple_epi32(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         _r = _mm256_cmple_epi64(value, o.value);
       }
       return _mm256_movemask_ps(_mm256_castsi256_ps(_r));
@@ -805,28 +820,111 @@ public:
   }
   template <typename A>
   constexpr inline v256 &
-  operator+=(A x)
+  operator+=(A __x)
     requires is_int_flag_type<A>
   {
+    F x = static_cast<F>(__x);
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<A, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         i256 _r = _mm256_set1_epi8(x);
         value = _mm256_add_epi8(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         i256 _r = _mm256_set1_epi16(x);
         value = _mm256_add_epi16(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         i256 _r = _mm256_set1_epi32(x);
         value = _mm256_add_epi32(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         i256 _r = _mm256_set1_epi64x(x);
         value = _mm256_add_epi64(value, _r);
       }
     }
     return *this;
+  }
+  constexpr inline v256 &
+  operator+=(const v256 &o)
+  {
+    T _r;
+    if constexpr ( stdlib::is_same_v<T, f256> ) {
+      _r = _mm256_add_ps(value, o.value);
+      value = _mm256_add_ps(value, _r);
+    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+      _r = _mm256_add_pd(value, o.value);
+      value = _mm256_add_pd(value, _r);
+    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
+      if constexpr ( __is_8_wide<F>() ) {
+        _r = _mm256_add_epi8(value, o.value);
+        value = _mm256_add_epi8(value, _r);
+      }
+      if constexpr ( __is_16_wide<F>() ) {
+        _r = _mm256_add_epi16(value, o.value);
+        value = _mm256_add_epi16(value, _r);
+      }
+      if constexpr ( __is_32_wide<F>() ) {
+        _r = _mm256_add_epi32(value, o.value);
+        value = _mm256_add_epi32(value, _r);
+      }
+      if constexpr ( __is_64_wide<F>() ) {
+        _r = _mm256_add_epi64(value, o.value);
+        value = _mm256_add_epi64(value, _r);
+      }
+    }
+    return *this;
+  }
+  constexpr inline v256 &
+  operator*=(const v256 &o)
+  {
+    T _r;
+    if constexpr ( stdlib::is_same_v<T, f256> ) {
+      _r = _mm256_mul_ps(value, o.value);
+      value = _r;
+    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+      _r = _mm256_mul_pd(value, o.value);
+      value = _r;
+    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
+      if constexpr ( __is_8_wide<F>() ) {
+        static_assert(!__is_8_wide<F>(), "AVX2 has no epi8 multiply");
+      }
+      if constexpr ( __is_16_wide<F>() ) {
+        _r = _mm256_mullo_epi16(value, o.value);
+        value = _r;
+      }
+      if constexpr ( __is_32_wide<F>() ) {
+        _r = _mm256_mullo_epi32(value, o.value);
+        value = _r;
+      }
+      if constexpr ( __is_64_wide<F>() ) {
+        static_assert(!__is_64_wide<F>(), "AVX2 has no epi64 multiply");
+      }
+    }
+    return *this;
+  }
+  constexpr inline v256
+  operator*(v256 x)
+  {
+    v256 _d;
+    if constexpr ( stdlib::is_same_v<T, f256> ) {
+      _d.value = _mm256_mul_ps(value, x.value);
+    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+      _d.value = _mm256_mul_pd(value, x.value);
+    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
+      if constexpr ( __is_8_wide<F>() ) {
+        static_assert(!__is_8_wide<F>(), "AVX2 has no epi8 multiply");
+      }
+      if constexpr ( __is_16_wide<F>() ) {
+        _d.value = _mm256_mullo_epi16(value, x.value);
+      }
+      if constexpr ( __is_32_wide<F>() ) {
+        _d.value = _mm256_mullo_epi32(value, x.value);
+      }
+      if constexpr ( __is_64_wide<F>() ) {
+        static_assert(!__is_64_wide<F>(), "AVX2 has no epi64 multiply");
+      }
+    }
+    return _d;
   }
   // end
   // scalar const subs
@@ -855,19 +953,19 @@ public:
     requires is_int_flag_type<A>
   {
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<A, __v8> ) {
+      if constexpr ( stdlib::is_same_v<A, __v8> or stdlib::is_same_v<A, __uv8> ) {
         i256 _r = _mm256_set1_epi8(x);
         value = _mm256_sub_epi8(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v16> ) {
+      if constexpr ( stdlib::is_same_v<A, __v16> or stdlib::is_same_v<A, __uv16> ) {
         i256 _r = _mm256_set1_epi16(x);
         value = _mm256_sub_epi16(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v32> ) {
+      if constexpr ( stdlib::is_same_v<A, __v32> or stdlib::is_same_v<A, __uv32> ) {
         i256 _r = _mm256_set1_epi32(x);
         value = _mm256_sub_epi32(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v64> ) {
+      if constexpr ( stdlib::is_same_v<A, __v64> or stdlib::is_same_v<A, __uv64> ) {
         i256 _r = _mm256_set1_epi64x(x);
         value = _mm256_sub_epi64(value, _r);
       }
@@ -883,66 +981,66 @@ public:
     } else if constexpr ( stdlib::is_same_v<T, d256> ) {
       value = _mm256_sub_pd(value, o.value);
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         value = _mm256_sub_epi8(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         value = _mm256_sub_epi16(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         value = _mm256_sub_epi32(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
         value = _mm256_sub_epi64(value, o.value);
       }
     }
     return *this;
   }
 
-  constexpr inline v256 &
+  constexpr inline v256
   operator+(const v256 &o) const
   {
-    T _r;
+    v256 _r;
     if constexpr ( stdlib::is_same_v<T, f256> ) {
-      _r = _mm256_add_ps(value, o.value);
+      _r.value = _mm256_add_ps(value, o.value);
     } else if constexpr ( stdlib::is_same_v<T, d256> ) {
-      _r = _mm256_add_pd(value, o.value);
+      _r.value = _mm256_add_pd(value, o.value);
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
-        _r = _mm256_add_epi8(value, o.value);
+      if constexpr ( __is_8_wide<F>() ) {
+        _r.value = _mm256_add_epi8(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
-        _r = _mm256_add_epi16(value, o.value);
+      if constexpr ( __is_16_wide<F>() ) {
+        _r.value = _mm256_add_epi16(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
-        _r = _mm256_add_epi32(value, o.value);
+      if constexpr ( __is_32_wide<F>() ) {
+        _r.value = _mm256_add_epi32(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
-        _r = _mm256_add_epi64(value, o.value);
+      if constexpr ( __is_64_wide<F>() ) {
+        _r.value = _mm256_add_epi64(value, o.value);
       }
     }
     return _r;
   }
-  constexpr inline v256 &
+  constexpr inline v256
   operator-(const v256 &o) const
   {
-    T _r;
+    v256 _r;
     if constexpr ( stdlib::is_same_v<T, f256> ) {
-      _r = _mm256_sub_ps(value, o.value);
+      _r.value = _mm256_sub_ps(value, o.value);
     } else if constexpr ( stdlib::is_same_v<T, d256> ) {
-      _r = _mm256_sub_pd(value, o.value);
+      _r.value = _mm256_sub_pd(value, o.value);
     } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
-        _r = _mm256_sub_epi8(value, o.value);
+      if constexpr ( __is_8_wide<F>() ) {
+        _r.value = _mm256_sub_epi8(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
-        _r = _mm256_sub_epi16(value, o.value);
+      if constexpr ( __is_16_wide<F>() ) {
+        _r.value = _mm256_sub_epi16(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
-        _r = _mm256_sub_epi32(value, o.value);
+      if constexpr ( __is_32_wide<F>() ) {
+        _r.value = _mm256_sub_epi32(value, o.value);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
-        _r = _mm256_sub_epi64(value, o.value);
+      if constexpr ( __is_64_wide<F>() ) {
+        _r.value = _mm256_sub_epi64(value, o.value);
       }
     }
     return _r;
@@ -1139,13 +1237,13 @@ public:
   {
     T _r;
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         _r = _mm256_srai_epi8(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         _r = _mm256_srai_epi16(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         _r = _mm256_srai_epi32(value, i);
       }
     }
@@ -1156,13 +1254,13 @@ public:
   operator<<=(int i)
   {
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         value = _mm256_srai_epi8(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         value = _mm256_srai_epi16(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         value = _mm256_srai_epi32(value, i);
       }
     }
@@ -1174,13 +1272,13 @@ public:
   {
     T _r;
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         _r = _mm256_slai_epi8(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         _r = _mm256_slai_epi16(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         _r = _mm256_slai_epi32(value, i);
       }
     }
@@ -1191,13 +1289,13 @@ public:
   operator>>=(int i)
   {
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         value = _mm256_slai_epi8(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         value = _mm256_slai_epi16(value, i);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         value = _mm256_slai_epi32(value, i);
       }
     }
@@ -1265,66 +1363,85 @@ public:
   }
   template <typename A>
   constexpr inline v256 &
-  operator*=(A x)
+  operator*=(A __x)
     requires is_int_flag_type<A>
   {
+    F x = static_cast<F>(__x);
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<A, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         i256 _r = _mm256_set1_epi8(x);
         value = _mm256_mullo_epi8(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         i256 _r = _mm256_set1_epi16(x);
         value = _mm256_mullo_epi16(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         i256 _r = _mm256_set1_epi32(x);
         value = _mm256_mullo_epi32(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<A, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
+        i256 _r = _mm256_set1_epi64(x);
+        value = _mm256_mullo_epi64(value, _r);
       }
     }
     return *this;
   }
 
-  constexpr inline T
+  constexpr inline v256 &
+  operator/=(const v256 &o)
+  {
+    T _r;
+    if constexpr ( stdlib::is_same_v<T, f256> ) {
+      _r = _mm256_div_ps(value, o.value);
+      value = _r;
+    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+      _r = _mm256_div_pd(value, o.value);
+      value = _r;
+    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
+      static_assert(!stdlib::is_same_v<T, i256>, "No SIMD integer division for __m256i (AVX2)");
+    }
+    return *this;
+  }
+  constexpr inline v256
   operator*(double x) const
   {
-    T _d;
+    v256 _d;
     if constexpr ( stdlib::is_same_v<T, d256> ) {
       d256 _r = _mm256_set1_pd(x);
-      _d = _mm256_mul_pd(value, _r);
+      _d.value = _mm256_mul_pd(value, _r);
     }
     return _d;
   }
-  constexpr inline T
+  constexpr inline v256
   operator*(float x) const
   {
-    T _d;
+    v256 _d;
     if constexpr ( stdlib::is_same_v<T, f256> ) {
       f256 _r = _mm256_set1_ps(x);
-      _d = _mm256_mul_ps(value, _r);
+      _d.value = _mm256_mul_ps(value, _r);
     }
     return _d;
   }
-  constexpr inline T
+  constexpr inline v256
   operator*(F x)
   {
-    T _d;
+    v256 _d;
     if constexpr ( stdlib::is_same_v<T, i256> ) {
-      if constexpr ( stdlib::is_same_v<F, __v8> ) {
+      if constexpr ( __is_8_wide<F>() ) {
         i256 _r = _mm256_set1_epi8(x);
-        _d = _mm256_mullo_epi8(value, _r);
+        _d.value = _mm256_mullo_epi8(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<F, __v16> ) {
+      if constexpr ( __is_16_wide<F>() ) {
         i256 _r = _mm256_set1_epi16(x);
-        _d = _mm256_mullo_epi16(value, _r);
+        _d.value = _mm256_mullo_epi16(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<F, __v32> ) {
+      if constexpr ( __is_32_wide<F>() ) {
         i256 _r = _mm256_set1_epi32(x);
-        _d = _mm256_mullo_epi32(value, _r);
+        _d.value = _mm256_mullo_epi32(value, _r);
       }
-      if constexpr ( stdlib::is_same_v<F, __v64> ) {
+      if constexpr ( __is_64_wide<F>() ) {
+        static_assert(!__is_64_wide<F>(), "AVX2 has no epi64 multiply");
       }
     }
     return _d;
@@ -1340,8 +1457,7 @@ public:
     if constexpr ( stdlib::is_same_v<F, __vd> ) {
       _mm256_storeu_pd(reinterpret_cast<T *>(arr), value);
     }
-    if constexpr ( stdlib::is_same_v<F, __v8> or stdlib::is_same_v<F, __v16> or stdlib::is_same_v<F, __v32>
-                   or stdlib::is_same_v<F, __v64> ) {
+    if constexpr ( __is_8_wide<F>() or __is_16_wide<F>() or __is_32_wide<F>() or __is_64_wide<F>() ) {
       _mm256_storeu_si256(reinterpret_cast<T *>(arr), value);
     }
   }
@@ -1354,8 +1470,7 @@ public:
     if constexpr ( stdlib::is_same_v<F, __vd> ) {
       _mm256_store_pd(reinterpret_cast<T *>(arr), value);
     }
-    if constexpr ( stdlib::is_same_v<F, __v8> or stdlib::is_same_v<F, __v16> or stdlib::is_same_v<F, __v32>
-                   or stdlib::is_same_v<F, __v64> ) {
+    if constexpr ( __is_8_wide<F>() or __is_16_wide<F>() or __is_32_wide<F>() or __is_64_wide<F>() ) {
       _mm256_store_si256(reinterpret_cast<T *>(arr), value);
     }
   }

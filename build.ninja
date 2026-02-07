@@ -53,3 +53,5 @@ rule cc_clang_compile_cmnd_debug
 
 # core
 build example_simd: cc_compile_cmnd examples/simd.cpp
+build example_simd_arith: cc_compile_cmnd examples/arith.cpp
+build example_simd_signal: cc_compile_cmnd examples/signal.cpp
