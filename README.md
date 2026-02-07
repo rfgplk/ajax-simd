@@ -2,9 +2,9 @@
 
 <div align="left">
 
-### **ajax**
+### **ajax** 🐘
 
-### zero-overhead (and common sense) C++ data-parallel types library
+#### zero-overhead (and common sense) C++ data-parallel types library
 ajax is a C++23 header-only SIMD abstraction library that provides thin, zero-overhead wrappers around x86 SIMD intrinsics; allowing developers to write expressive, type-safe, and performance-critical data-parallel code.
 
 </div>
