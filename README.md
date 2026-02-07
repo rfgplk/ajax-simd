@@ -8,6 +8,7 @@
 ajax is a C++23 header-only SIMD abstraction library that provides thin, zero-overhead wrappers around x86 SIMD intrinsics; allowing developers to write expressive, type-safe, and performance-critical data-parallel code.
 
 </div>
+
 [![License](https://img.shields.io/badge/License-Boost_1.0-lightblue.svg)](https://www.boost.org/LICENSE_1_0.txt)
 [![C++23](https://img.shields.io/badge/C++-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 
