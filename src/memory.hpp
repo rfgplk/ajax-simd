@@ -5,12 +5,15 @@
 //  http://www.boost.org/LICENSE_1_0.txt
 #pragma once
 
-#include "namespace.hpp"
 #include "intrin.hpp"
+#include "namespace.hpp"
 #include "types.hpp"
 
 namespace ajax
 {
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcpy - unaligned
 
 template <typename T>
 __attribute__((nonnull)) T *
@@ -99,6 +102,9 @@ memcpy512(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
   return dest;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcpy
+
 template <typename T>
 __attribute__((nonnull)) T *
 amemcpy128(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
@@ -176,6 +182,9 @@ amemcpy512(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
 
   return dest;
 }
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcpy
 
 template <typename T>
 __attribute__((nonnull)) T *
@@ -261,6 +270,9 @@ ntmemcpy512(T *__restrict dest, const T *__restrict src, const u64 count) noexce
   return dest;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcpy
+
 template <typename F, typename D>
 F &
 rmemcpy128(F &__restrict dest, const D &__restrict src, const u64 cnt) noexcept
@@ -318,9 +330,12 @@ rmemcpy512(F &__restrict dest, const D &__restrict src, const u64 cnt) noexcept
   return dest;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memmove
+
 template <typename T>
 __attribute__((nonnull)) T *
-memmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+memmove128(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "memmove128 requires trivially copyable type");
 
@@ -332,7 +347,7 @@ memmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
     return dest;
 
   if ( d < s || d >= s + bytes ) {
-
+    // non-overlapping or dest is before src: forward copy
     const u64 n = bytes / 16;
     for ( u64 i = 0; i < n; i++ ) {
       i128 pkt = _mm_loadu_si128(reinterpret_cast<const i128 *>(s + i * 16));
@@ -344,7 +359,7 @@ memmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
         d[n * 16 + i] = s[n * 16 + i];
     }
   } else {
-
+    // overlapping: dest is after src, must copy backward to avoid clobbering
     const u64 n = bytes / 16;
     const u64 rem = bytes % 16;
     if ( rem ) {
@@ -362,7 +377,7 @@ memmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
 
 template <typename T>
 __attribute__((nonnull)) T *
-memmove256(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+memmove256(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "memmove256 requires trivially copyable type");
 
@@ -402,7 +417,7 @@ memmove256(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
 
 template <typename T>
 __attribute__((nonnull)) T *
-memmove512(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+memmove512(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "memmove512 requires trivially copyable type");
 
@@ -440,9 +455,12 @@ memmove512(T *__restrict dest, const T *__restrict src, const u64 count) noexcep
   return dest;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memmove - aligned variants
+
 template <typename T>
 __attribute__((nonnull)) T *
-amemmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+amemmove128(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "amemmove128 requires trivially copyable type");
 
@@ -482,7 +500,7 @@ amemmove128(T *__restrict dest, const T *__restrict src, const u64 count) noexce
 
 template <typename T>
 __attribute__((nonnull)) T *
-amemmove256(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+amemmove256(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "amemmove256 requires trivially copyable type");
 
@@ -522,7 +540,7 @@ amemmove256(T *__restrict dest, const T *__restrict src, const u64 count) noexce
 
 template <typename T>
 __attribute__((nonnull)) T *
-amemmove512(T *__restrict dest, const T *__restrict src, const u64 count) noexcept
+amemmove512(T *dest, const T *src, const u64 count) noexcept
 {
   static_assert(stdlib::is_trivially_copyable_v<T>, "amemmove512 requires trivially copyable type");
 
@@ -560,6 +578,9 @@ amemmove512(T *__restrict dest, const T *__restrict src, const u64 count) noexce
   return dest;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memset - unaligned
+
 template <typename T>
 __attribute__((nonnull)) T *
 memset128(T *__restrict src, const u8 in, const u64 count) noexcept
@@ -568,6 +589,7 @@ memset128(T *__restrict src, const u8 in, const u64 count) noexcept
   const u64 bytes = count * sizeof(T);
   const u64 n = bytes / 16;
 
+  // broadcast byte to fill entire register
   const i128 v = _mm_set1_epi8(static_cast<char>(in));
 
   for ( u64 i = 0; i < n; i++ )
@@ -625,6 +647,9 @@ memset512(T *__restrict src, const u8 in, const u64 count) noexcept
 
   return src;
 }
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memset - aligned
 
 template <typename T>
 __attribute__((nonnull)) T *
@@ -691,6 +716,9 @@ amemset512(T *__restrict src, const u8 in, const u64 count) noexcept
 
   return src;
 }
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memset - non-temporal
 
 template <typename T>
 __attribute__((nonnull)) T *
@@ -764,6 +792,9 @@ ntmemset512(T *__restrict src, const u8 in, const u64 count) noexcept
   return src;
 }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcmp
+
 template <typename T>
 __attribute__((nonnull)) i64
 memcmp128(const T *__restrict src, const T *__restrict dest, const u64 count) noexcept
@@ -783,7 +814,7 @@ memcmp128(const T *__restrict src, const T *__restrict dest, const u64 count) no
       const u64 limit = base + 16 < bytes ? base + 16 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -792,7 +823,7 @@ memcmp128(const T *__restrict src, const T *__restrict dest, const u64 count) no
     const u64 base = n * 16;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
@@ -817,7 +848,7 @@ memcmp256(const T *__restrict src, const T *__restrict dest, const u64 count) no
       const u64 limit = base + 32 < bytes ? base + 32 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -826,7 +857,7 @@ memcmp256(const T *__restrict src, const T *__restrict dest, const u64 count) no
     const u64 base = n * 32;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
@@ -850,7 +881,7 @@ memcmp512(const T *__restrict src, const T *__restrict dest, const u64 count) no
       const u64 limit = base + 64 < bytes ? base + 64 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -859,11 +890,14 @@ memcmp512(const T *__restrict src, const T *__restrict dest, const u64 count) no
     const u64 base = n * 64;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
 }
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// memcmp - aligned
 
 template <typename T>
 __attribute__((nonnull)) i64
@@ -884,7 +918,7 @@ amemcmp128(const T *__restrict src, const T *__restrict dest, const u64 count) n
       const u64 limit = base + 16 < bytes ? base + 16 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -893,7 +927,7 @@ amemcmp128(const T *__restrict src, const T *__restrict dest, const u64 count) n
     const u64 base = n * 16;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
@@ -918,7 +952,7 @@ amemcmp256(const T *__restrict src, const T *__restrict dest, const u64 count) n
       const u64 limit = base + 32 < bytes ? base + 32 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -927,7 +961,7 @@ amemcmp256(const T *__restrict src, const T *__restrict dest, const u64 count) n
     const u64 base = n * 32;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
@@ -951,7 +985,7 @@ amemcmp512(const T *__restrict src, const T *__restrict dest, const u64 count) n
       const u64 limit = base + 64 < bytes ? base + 64 : bytes;
       for ( u64 j = base; j < limit; j++ )
         if ( s[j] != d[j] )
-          return static_cast<i64>(&s[j] - &d[j]);
+          return static_cast<i64>(static_cast<unsigned>(s[j]) - static_cast<unsigned>(d[j]));
     }
   }
 
@@ -960,10 +994,10 @@ amemcmp512(const T *__restrict src, const T *__restrict dest, const u64 count) n
     const u64 base = n * 64;
     for ( u64 i = 0; i < rem; i++ )
       if ( s[base + i] != d[base + i] )
-        return static_cast<i64>(&s[base + i] - &d[base + i]);
+        return static_cast<i64>(static_cast<unsigned>(s[base + i]) - static_cast<unsigned>(d[base + i]));
   }
 
   return 0;
 }
 
-};
+};     // namespace ajax
