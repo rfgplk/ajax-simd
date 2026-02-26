@@ -12,6 +12,7 @@
 #include "dispatch.hpp"
 #include "load.hpp"
 #include "types.hpp"
+#include "memory.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-attributes"
