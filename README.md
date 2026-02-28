@@ -1,4 +1,4 @@
-<img align="left" style="width:300px" src="https://github.com/user-attachments/assets/7ef7560e-3363-412e-bd38-d77d7fa921b1" alt="ajax_logo" width="300"/> 
+<img align="left" style="width:300px" src="https://github.com/user-attachments/assets/ae5de829-b849-49d6-bf0b-bf4c8698d8a6" alt="ajax_logo" width="300"/> 
 
 <div align="left">
 
