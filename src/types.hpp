@@ -28,20 +28,22 @@ using b64 = __m64;
 using f128 = __m128;
 using d128 = __m128d;
 using i128 = __m128i;
+using h128 = __m128h;
 using f256 = __m256;
 using d256 = __m256d;
+using h256 = __m256h;
 using i256 = __m256i;
 using f512 = __m512;
 using d512 = __m512d;
 using i512 = __m512i;
+using h512 = __m512h;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-attributes"
 template <typename T>
-concept is_simd_type
-    = stdlib::same_as<T, b64> or stdlib::same_as<T, f128> or stdlib::same_as<T, d128> or stdlib::same_as<T, i128>
-      or stdlib::same_as<T, f256> or stdlib::same_as<T, d256> or stdlib::same_as<T, i256> or stdlib::same_as<T, f512>
-      or stdlib::same_as<T, d512> or stdlib::same_as<T, i512>;
+concept is_simd_type = stdlib::same_as<T, b64> or stdlib::same_as<T, f128> or stdlib::same_as<T, d128> or stdlib::same_as<T, i128>
+                       or stdlib::same_as<T, f256> or stdlib::same_as<T, d256> or stdlib::same_as<T, i256> or stdlib::same_as<T, f512>
+                       or stdlib::same_as<T, d512> or stdlib::same_as<T, i512>;
 template <typename T>
 concept is_simd_128_type = stdlib::same_as<T, f128> or stdlib::same_as<T, d128> or stdlib::same_as<T, i128>;
 template <typename T>
@@ -54,8 +56,8 @@ concept is_int_flag_type
       or stdlib::same_as<T, __v8> or stdlib::same_as<T, __v16> or stdlib::same_as<T, __v32> or stdlib::same_as<T, __v64>;
 
 template <typename T>
-concept is_flag_type = stdlib::same_as<T, __vd> or stdlib::same_as<T, __vf> or stdlib::same_as<T, __v8>
-                       or stdlib::same_as<T, __v16> or stdlib::same_as<T, __v32> or stdlib::same_as<T, __v64>;
+concept is_flag_type = stdlib::same_as<T, __vd> or stdlib::same_as<T, __vf> or stdlib::same_as<T, __v8> or stdlib::same_as<T, __v16>
+                       or stdlib::same_as<T, __v32> or stdlib::same_as<T, __v64>;
 
 template <typename F>
 constexpr bool
