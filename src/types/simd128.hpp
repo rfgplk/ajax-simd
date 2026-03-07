@@ -228,7 +228,7 @@ public:
     int __i = 0;
     for ( auto itr = lst.begin(); itr != lst.end(); ++itr )
       __arr[__i++] = *itr;
-    value = _mm256_set_epi8(__arr[15], __arr[14], __arr[13], __arr[12], __arr[11], __arr[10], __arr[9], __arr[8],
+    value = _mm_set_epi8(__arr[15], __arr[14], __arr[13], __arr[12], __arr[11], __arr[10], __arr[9], __arr[8],
                             __arr[7], __arr[6], __arr[5], __arr[4], __arr[3], __arr[2], __arr[1], __arr[0]);
   }
   // end of ints
