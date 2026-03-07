@@ -35,10 +35,10 @@ template <is_simd_128_type T, is_flag_type F> class v128
   __impl_one_init(void)
   {
     if constexpr ( stdlib::same_as<T, f128> ) {
-      value = _mm_castsi128_pd(_mm_set1_epi32(-1));
+      value = _mm_castsi128_ps(_mm_set1_epi32(-1));
     }
     if constexpr ( stdlib::same_as<T, d128> ) {
-      value = _mm_castsi128_ps(_mm_set1_epi64x(-1));
+      value = _mm_castsi128_pd(_mm_set1_epi64x(-1));
     }
     if constexpr ( stdlib::same_as<T, i128> ) {
       value = _mm_set1_epi32(-1);
@@ -221,16 +221,14 @@ public:
   }
   v128(std::initializer_list<i8> lst)
   {
-    if ( lst.size() != 32 )
+    if ( lst.size() != 16 )
       return;
     i8 __arr[32];
 
     int __i = 0;
     for ( auto itr = lst.begin(); itr != lst.end(); ++itr )
       __arr[__i++] = *itr;
-    value = _mm256_set_epi8(__arr[31], __arr[30], __arr[29], __arr[28], __arr[27], __arr[26], __arr[25], __arr[24],
-                            __arr[23], __arr[22], __arr[21], __arr[20], __arr[19], __arr[18], __arr[17], __arr[16],
-                            __arr[15], __arr[14], __arr[13], __arr[12], __arr[11], __arr[10], __arr[9], __arr[8],
+    value = _mm256_set_epi8(__arr[15], __arr[14], __arr[13], __arr[12], __arr[11], __arr[10], __arr[9], __arr[8],
                             __arr[7], __arr[6], __arr[5], __arr[4], __arr[3], __arr[2], __arr[1], __arr[0]);
   }
   // end of ints
@@ -755,13 +753,13 @@ public:
   operator*=(const v128 &o)
   {
     T _r;
-    if constexpr ( stdlib::is_same_v<T, f256> ) {
+    if constexpr ( stdlib::is_same_v<T, f128> ) {
       _r = _mm_mul_ps(value, o.value);
       value = _r;
-    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+    } else if constexpr ( stdlib::is_same_v<T, d128> ) {
       _r = _mm_mul_pd(value, o.value);
       value = _r;
-    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
+    } else if constexpr ( stdlib::is_same_v<T, i128> ) {
       if constexpr ( __is_8_wide<F>() ) {
         static_assert(!__is_8_wide<F>(), "SSE has no epi8 multiply");
       }
@@ -783,14 +781,14 @@ public:
   operator/=(const v128 &o)
   {
     T _r;
-    if constexpr ( stdlib::is_same_v<T, f256> ) {
+    if constexpr ( stdlib::is_same_v<T, f128> ) {
       _r = _mm_div_ps(value, o.value);
       value = _r;
-    } else if constexpr ( stdlib::is_same_v<T, d256> ) {
+    } else if constexpr ( stdlib::is_same_v<T, d128> ) {
       _r = _mm_div_pd(value, o.value);
       value = _r;
-    } else if constexpr ( stdlib::is_same_v<T, i256> ) {
-      static_assert(!stdlib::is_same_v<T, i256>, "No SIMD integer division for __m128i (SSE/AVX)");
+    } else if constexpr ( stdlib::is_same_v<T, i128> ) {
+      static_assert(!stdlib::is_same_v<T, i128>, "No SIMD integer division for __m128i (SSE/AVX)");
     }
     return *this;
   }
@@ -800,7 +798,7 @@ public:
   constexpr inline v128 &
   operator-=(double x)
   {
-    if constexpr ( stdlib::is_same_v<T, f128> ) {
+    if constexpr ( stdlib::is_same_v<T, d128> ) {
       d128 _r = _mm_set1_pd(x);
       value = _mm_sub_pd(value, _r);
     }

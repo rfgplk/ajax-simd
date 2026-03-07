@@ -134,7 +134,7 @@ public:
   inline v256 &
   operator=(std::initializer_list<i8> lst)
   {
-    if ( lst.size() != 16 )
+    if ( lst.size() != 32 )
       return *this;
     i8 __arr[32];
 
